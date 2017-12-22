@@ -4,11 +4,31 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+let mongoose = require('mongoose')
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+//设置跨域访问
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "X-Requested-With,authorization,content-type")
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS")
+  res.header("X-Powered-By",' 3.2.1')
+  res.header("Content-Type", "application/json;charset=utf-8")
+  next()
+})
+
+// 连接数据库
+mongoose.connect('mongodb://localhost:27017/sayhub', {
+  useMongoClient: true
+})
+
+//mongoose promise 风格
+mongoose.Promise = global.Promise
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +43,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/api', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

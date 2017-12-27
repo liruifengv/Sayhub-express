@@ -14,6 +14,9 @@ let articlesSchema = new Schema({
   author: {
     type: String
   },
+  category: {
+    type: Array
+  },
   created: {
     type: Date,
     default: Date.now

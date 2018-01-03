@@ -5,6 +5,14 @@ var jwt = require('jsonwebtoken');  // token
 var expressJwt = require('express-jwt'); // express token
 let Users = require('../models/users')
 
+var date = new Date(),
+  yy = date.getFullYear(),
+  MM = date.getMonth() + 1,
+  dd = date.getDate(),
+  hh = date.getHours(),
+  mm = date.getMinutes(),
+  ss = date.getSeconds();
+  
   // 用户注册
   router.post('/users', function(req, res ,next) {
 
@@ -17,7 +25,9 @@ let Users = require('../models/users')
     
     let newUser = {
       username: username,
-      hashedPassword: hashedPassword
+      hashedPassword: hashedPassword,
+      created: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss,
+      updated: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss
     }
 
     Users.findOne({username: username})

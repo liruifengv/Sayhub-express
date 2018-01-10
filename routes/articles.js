@@ -7,14 +7,6 @@ var md = require('markdown-it')({
   typographer: true
 })
 
-var date = new Date(),
-  yy = date.getFullYear(),
-  MM = date.getMonth() + 1,
-  dd = date.getDate(),
-  hh = date.getHours(),
-  mm = date.getMinutes(),
-  ss = date.getSeconds();
-
 router.get('/articles', function (req, res, next) {
   let category = req.query.category
   let page_size = Number(req.query.page_size)
@@ -69,7 +61,7 @@ router.post('/articles', function (req, res, next) {
   // console.log(req.body)
   const reg = /[\\\`\*\_\[\]\#\+\-\!\>]/g
   const content_render = md.render(req.body.content);
-  const content_text = req.body.content.replace(reg, "") 
+  const content_text = req.body.content.replace(reg, "")
   let newArticle = {
     title: req.body.title,
     abstract: req.body.abstract,
@@ -78,8 +70,8 @@ router.post('/articles', function (req, res, next) {
     content_text: content_text, 
     author: req.body.author,
     category: req.body.category,
-    created: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss,
-    updated: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss
+    created: new Date().toLocaleString(),
+    updated: new Date().toLocaleString()
   }
   Articles.create(newArticle)
     .then((newArticleInfo) => {
@@ -89,10 +81,10 @@ router.post('/articles', function (req, res, next) {
 
 router.get('/article/:id', function(req, res, next) {
   let _id = req.params.id
-  console.log(req.params)
+  // console.log(req.params)
   Articles.findById({_id: _id})
   .then((ArticleDetail) => {
-    console.log(ArticleDetail)
+    // console.log(ArticleDetail)
     res.json(ArticleDetail)
   }).catch(function (err) {
     return res.status(401).send()

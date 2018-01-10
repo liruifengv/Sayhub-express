@@ -4,14 +4,6 @@ let crypto = require('crypto')  // 加墨
 var jwt = require('jsonwebtoken');  // token
 var expressJwt = require('express-jwt'); // express token
 let Users = require('../models/users')
-
-var date = new Date(),
-  yy = date.getFullYear(),
-  MM = date.getMonth() + 1,
-  dd = date.getDate(),
-  hh = date.getHours(),
-  mm = date.getMinutes(),
-  ss = date.getSeconds();
   
   // 用户注册
   router.post('/users', function(req, res ,next) {
@@ -26,8 +18,8 @@ var date = new Date(),
     let newUser = {
       username: username,
       hashedPassword: hashedPassword,
-      created: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss,
-      updated: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss
+      created: new Date().toLocaleString(),
+      updated: new Date().toLocaleString()
     }
 
     Users.findOne({username: username})

@@ -11,6 +11,14 @@ let articlesSchema = new Schema({
     type: String,
     default: ''
   },
+  content_render: {
+    type: String,
+    default: ''
+  },
+  content_text: {
+    type: String,
+    default: ''
+  },
   author: {
     type: String
   },

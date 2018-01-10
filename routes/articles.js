@@ -1,6 +1,11 @@
 let express = require('express')
 let router = express.Router()
 let Articles = require('../models/articles')
+var md = require('markdown-it')({
+  html: true,
+  linkify: true,
+  typographer: true
+})
 
 var date = new Date(),
   yy = date.getFullYear(),
@@ -61,11 +66,16 @@ router.get('/articles', function (req, res, next) {
 })
 
 router.post('/articles', function (req, res, next) {
-  console.log(req.body)
+  // console.log(req.body)
+  const reg = /[\\\`\*\_\[\]\#\+\-\!\>]/g
+  const content_render = md.render(req.body.content);
+  const content_text = req.body.content.replace(reg, "") 
   let newArticle = {
     title: req.body.title,
     abstract: req.body.abstract,
     content: req.body.content,
+    content_render: content_render,
+    content_text: content_text, 
     author: req.body.author,
     category: req.body.category,
     created: yy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':' + ss,
@@ -73,7 +83,7 @@ router.post('/articles', function (req, res, next) {
   }
   Articles.create(newArticle)
     .then((newArticleInfo) => {
-      res.sendStatus(200)
+      return res.status(200).json({id: newArticleInfo._id})
     })
 })
 

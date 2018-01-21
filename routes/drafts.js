@@ -30,7 +30,7 @@ router.get('/drafts', function (req, res, next) {
       let total = count
 
       // 分页
-      Drafts.find({})
+      Drafts.find({author: username})
         .limit(page_size)
         .skip((page - 1) * page_size)
         .exec()

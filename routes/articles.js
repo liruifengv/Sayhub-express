@@ -2,12 +2,13 @@ let express = require('express')
 let router = express.Router()
 var jwt = require('jsonwebtoken');  // token
 let Articles = require('../models/articles')
+let Drafts = require('../models/drafts')
 var md = require('markdown-it')({
   html: true,
   linkify: true,
   typographer: true
 })
-
+// 文章列表
 router.get('/articles', function (req, res, next) {
   let category = req.query.category
   let page_size = Number(req.query.page_size)
@@ -57,9 +58,8 @@ router.get('/articles', function (req, res, next) {
     })
   }
 })
-
+// 发表文章
 router.post('/articles', function (req, res, next) {
-  // console.log(req.body)
   const reg = /[\\\`\*\_\[\]\#\+\-\!\>]/g
   const content_render = md.render(req.body.content);
   const content_text = req.body.content.replace(reg, "")
@@ -69,21 +69,28 @@ router.post('/articles', function (req, res, next) {
     content_render: content_render,
     content_text: content_text, 
     author: req.body.author,
-    category: req.body.category,
-    created: new Date().toLocaleString(),
-    updated: new Date().toLocaleString()
+    category: req.body.category
   }
   Articles.create(newArticle)
     .then((newArticleInfo) => {
-      return res.status(200).json({id: newArticleInfo._id})
+      res.status(200).json({id: newArticleInfo._id})
+      if (req.body.draftId) {
+        Drafts.remove({
+          _id: req.body.draftId
+        })
+        .then(() => {
+          return res.sendStatus(200)
+        }).catch(function (err) {
+          return res.status(401).send()
+        })
+      }
     })
 })
-
+// 文章详情
 router.get('/article/:id', function(req, res, next) {
   let _id = req.params.id
 
   if (req.headers.authorization) {
-    console.log('已登录')
     let sayhub_token = req.headers.authorization.slice(7)
     const decoded = jwt.verify(sayhub_token, 'sayhub');
     // 从token中拿到用户名和userID
@@ -115,7 +122,6 @@ router.get('/article/:id', function(req, res, next) {
         }
       })
   } else {
-    console.log('未登录')
     Articles.findByIdAndUpdate(_id, {
       is_up: false
     },{new: true})
@@ -127,10 +133,9 @@ router.get('/article/:id', function(req, res, next) {
     })
   }
 })
-
+// 删除文章
 router.delete('/article/:id', function(req, res, next) {
   let _id = req.params.id
-  console.log(req.params)
   Articles.remove({_id:_id})
     .then(() => {
       return res.sendStatus(200)
@@ -138,7 +143,7 @@ router.delete('/article/:id', function(req, res, next) {
       return res.status(401).send()
   })
 })
-
+// 更新文章
 router.put('/article/:id', function (req, res, next) {
   let _id = req.params.id
   // console.log(req.body)
@@ -151,15 +156,13 @@ router.put('/article/:id', function (req, res, next) {
     content_render: content_render,
     content_text: content_text, 
     author: req.body.author,
-    category: req.body.category,
-    updated: new Date().toLocaleString()
   }
   Articles.findByIdAndUpdate(_id, editArticle, {new:true})
     .then((ArticleInfo) => {
       return res.status(200).json({id: ArticleInfo._id})
     })
 })
-
+// 点赞
 router.post(`/article/:id/up` , function(req, res, next) {
 
   let articleId = req.params.id
@@ -184,7 +187,7 @@ router.post(`/article/:id/up` , function(req, res, next) {
     return res.sendStatus(401)
   }
 })
-
+// 取消赞
 router.delete(`/article/:id/up` , function(req, res, next) {
 
   let articleId = req.params.id

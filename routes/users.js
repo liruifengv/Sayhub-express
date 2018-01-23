@@ -17,9 +17,7 @@ let Users = require('../models/users')
     
     let newUser = {
       username: username,
-      hashedPassword: hashedPassword,
-      created: new Date().toLocaleString(),
-      updated: new Date().toLocaleString()
+      hashedPassword: hashedPassword
     }
 
     Users.findOne({username: username})

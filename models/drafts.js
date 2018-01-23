@@ -22,10 +22,12 @@ let draftsSchema = new Schema({
     type: Array
   },
   created: {
-    type: String
+    type: Date,
+    default: Date.now()
   },
   updated: {
-    type: String
+    type: Date,
+    default: Date.now()
   }
 })
 

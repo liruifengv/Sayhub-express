@@ -62,9 +62,7 @@ router.post('/drafts', function (req, res, next) {
     content_render: content_render,
     content_text: content_text,
     author: req.body.author,
-    category: req.body.category,
-    created: new Date().toLocaleString(),
-    updated: new Date().toLocaleString()
+    category: req.body.category
   }
   Drafts.create(newDraft)
     .then((newDraftInfo) => {
@@ -98,9 +96,7 @@ router.put('/draft/:id', function (req, res, next) {
     content: req.body.content,
     content_render: content_render,
     content_text: content_text,
-    author: req.body.author,
-    category: req.body.category,
-    updated: new Date().toLocaleString()
+    author: req.body.author
   }
   Drafts.findByIdAndUpdate(_id, editDraft, {
       new: true

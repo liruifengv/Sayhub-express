@@ -17,10 +17,12 @@ let usersSchema = new Schema({
     default: ''
   },
   created: {
-    type: String
+    type: Date,
+    default: Date.now()
   },
   updated: {
-    type: String
+    type: Date,
+    default: Date.now()
   }
 })
 

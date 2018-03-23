@@ -59,9 +59,9 @@ let Users = require('../models/users')
   })
 
   // 获取 userInfo
-  router.get('/users/:id', function(req, res, next) {
-    let userId = req.params.id
-    Users.findById(userId).then(function (user) {
+  router.get('/users/:username', function(req, res, next) {
+    let username = req.params.username
+    Users.findOne({username: username}).then(function (user) {
       return res.status(200).json(user.userInfo);
     }).catch(function (err) {
       return res.status(401).send();

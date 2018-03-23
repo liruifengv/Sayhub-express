@@ -65,3 +65,5 @@ router.post('/article/:id/comment', function(req, res, next) {
       return res.status(401).send()
     })
 })
+
+module.exports = router;

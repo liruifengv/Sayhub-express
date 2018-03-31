@@ -11,7 +11,7 @@ router.get('/article/:id/comments', function (req, res, next) {
 
   const commentsQuery = Comments.find({articleID,articleID})
 
-  // 查询文章总数
+  // 查询评论总数
   commentsQuery.count({}, function(err, count) {
     if (err) return handleError(err)
     console.log('评论总数为：', count )

@@ -88,4 +88,38 @@ let Users = require('../models/users')
     }
   })
 
+// 更新个人资料
+router.put('/profile', function(req, res, next) {
+      // console.log(req.headers.authorization)
+    let sayhub_token = req.headers.authorization.slice(7)
+     // console.log(sayhub_token)
+    if (sayhub_token) {
+      const decoded = jwt.verify(sayhub_token, 'sayhub');
+        // 从token中拿到用户名和userID
+      const username = decoded.username
+      const userID = decoded.userID
+      const newProfile = {
+        bio: req.body.bio,
+        email: req.body.email
+      }
+      Users.findByIdAndUpdate(userID, newProfile, {new: true})
+        .then(function (user) {
+          return res.status(200).json(user.userInfo);
+        }).catch(function (err) {
+          return res.status(401).send();
+        });
+      } else {
+        return res.status(401).send();
+      }
+})
+router.patch('/avatar', function(req, res, next) {
+  let sayhub_token = req.headers.authorization.slice(7)
+  if (sayhub_token) {
+    const decoded = jwt.verify(sayhub_token, 'sayhub');
+      // 从token中拿到用户名和userID
+    const username = decoded.username
+    const userID = decoded.userID
+    
+  }
+})
 module.exports = router;

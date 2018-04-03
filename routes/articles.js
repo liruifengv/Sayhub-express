@@ -10,11 +10,21 @@ var md = require('markdown-it')({
 })
 // 文章列表
 router.get('/articles', function (req, res, next) {
-  let category = req.query.category
+  let category = req.query.category   // 标签分类
+  let title = req.query.title         // 搜索文章  目前只支持 title
   let page_size = Number(req.query.page_size)
   let page = Number(req.query.page)
-  // console.log(req.query)
-  if (category) {
+  
+  // 通过query参数判断
+  if (title) {
+    Articles.find({title: title})
+      .then((articles) => {
+        return res.status(200).json({articles})
+      })
+      .catch((err) => {
+        return res.status(400).send()
+      })
+  } else if (category) {
 
     const articlesQuery = Articles.find({category,category})
 

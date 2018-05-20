@@ -4,6 +4,8 @@ let crypto = require('crypto')  // 加墨
 var jwt = require('jsonwebtoken');  // token
 var expressJwt = require('express-jwt'); // express token
 let Users = require('../models/users')
+let Articles = require('../models/articles')
+
   
   // 用户注册
   router.post('/users', function(req, res ,next) {
@@ -27,7 +29,7 @@ let Users = require('../models/users')
         } else {
           Users.create(newUser)
             .then((newUserInfo) => {
-              res.sendStatus(200)
+              res.sendStatus(200).send({'content':'注册成功'});
             })
         }
       })
@@ -68,6 +70,15 @@ let Users = require('../models/users')
     });
   })
 
+    // 获取 user 发表过的文章
+  router.get('/users/:username/articles', function(req, res, next) {
+    let username = req.params.username
+    Articles.find({author: username}).then(function (articles) {
+      return res.status(200).json(articles);
+    }).catch(function (err) {
+      return res.status(401).send();
+    });
+  })
   // 获取登陆用户 Profile
   router.get('/profile', function(req, res, next) {
     // console.log(req.headers.authorization)

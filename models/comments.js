@@ -19,6 +19,17 @@ let commentsSchema = new Schema({
   updated: {
     type: Date,
     default: Date.now()
+  },
+  is_up: {             // 是否点赞
+    type: Boolean,
+    default: false
+  },
+  votes_count: {             // 点赞数量
+    type: Number,
+    default: 0
+  },
+  votes: {                  // 点赞人数组(里面包含点赞人的 id)
+    type: Array
   }
 })
 

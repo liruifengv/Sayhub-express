@@ -14,7 +14,6 @@ router.get('/articles', function (req, res, next) {
   let title = req.query.title         // 搜索文章  目前只支持 title
   let page_size = Number(req.query.page_size)
   let page = Number(req.query.page)
-  
   // 通过query参数判断
   if (title) {
     Articles.find({title: title})
@@ -212,7 +211,7 @@ router.delete(`/article/:id/up` , function(req, res, next) {
     const userID = decoded.userID
 
     Articles.findByIdAndUpdate(articleId,{
-      'pull':{'votes':userID},
+      '$pull':{'votes':userID},
       '$inc':{'votes_count':-1},
       is_up: false
     },{new:true}).then((ArticleInfo) => {

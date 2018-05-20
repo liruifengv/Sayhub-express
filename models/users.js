@@ -16,6 +16,18 @@ let usersSchema = new Schema({
     type: String,
     default: ''
   },
+  company: {
+    type: String,
+    default: ''
+  },
+  github: {
+    type: String,
+    default: ''
+  },
+  homepage: {
+    type: String,
+    default: ''
+  },
   created: {
     type: Date,
     default: Date.now()
@@ -34,8 +46,12 @@ usersSchema
       'bio': this.bio,
       'email': this.email,
       'avatar': this.avatar,
+      'company': this.company,
+      'homepage': this.homepage,
+      'github': this.github,      
       'created':this.created,
-      'updated':this.updated
+      'updated':this.updated,
+      '_id': this._id
     };
   });
 

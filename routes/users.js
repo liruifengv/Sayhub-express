@@ -100,7 +100,7 @@ let Articles = require('../models/articles')
   })
 
 // 更新个人资料
-router.put('/profile', function(req, res, next) {
+router.post('/profile', function(req, res, next) {
       // console.log(req.headers.authorization)
     let sayhub_token = req.headers.authorization.slice(7)
      // console.log(sayhub_token)
@@ -111,7 +111,10 @@ router.put('/profile', function(req, res, next) {
       const userID = decoded.userID
       const newProfile = {
         bio: req.body.bio,
-        email: req.body.email
+        email: req.body.email,
+        company: req.body.company,
+        github: req.body.github,
+        homepage: req.body.homepage  
       }
       Users.findByIdAndUpdate(userID, newProfile, {new: true})
         .then(function (user) {
@@ -119,9 +122,9 @@ router.put('/profile', function(req, res, next) {
         }).catch(function (err) {
           return res.status(401).send();
         });
-      } else {
-        return res.status(401).send();
-      }
+    } else {
+      return res.status(401).send();
+    }
 })
 router.patch('/avatar', function(req, res, next) {
   let sayhub_token = req.headers.authorization.slice(7)
@@ -133,4 +136,43 @@ router.patch('/avatar', function(req, res, next) {
     
   }
 })
+  // 用户修改密码
+  router.post('/users/password/change', function (req, res, next) {
+
+    let oldPassword = req.body.oldPassword
+    let newPassword = req.body.newPassword
+    console.log(oldPassword)
+    let sayhub_token = req.headers.authorization.slice(7)
+    // console.log(sayhub_token)
+   if (sayhub_token) {
+     const decoded = jwt.verify(sayhub_token, 'sayhub');
+       // 从token中拿到用户名和userID
+     const username = decoded.username
+     const userID = decoded.userID
+     Users.findOne({username: username})
+      .then((userInfo) => {
+        console.log(userInfo)
+        if (userInfo) {
+         // 加密
+          let md5 = crypto.createHash('md5')
+          let hashedPassword = md5.update(oldPassword).digest('hex')
+        //  let newHashedPassword = md5.update(newPassword).digest('hex')
+         // 判断密码正确
+          if (hashedPassword === userInfo.hashedPassword) {
+            console.log('旧密码正确')
+            let md5 = crypto.createHash('md5')
+            let newHashedPassword = md5.update(newPassword).digest('hex')
+            Users.findByIdAndUpdate(userID,{
+              hashedPassword: newHashedPassword
+            },{new:true}).then((userInfo) => {
+              console.log('222')              
+              res.status(200).json({'content':'修改密码成功'})
+            })
+          } else {
+            res.status(400).send({'content':'旧密码错误'});
+          }
+      }
+     })
+    }
+  })
 module.exports = router;

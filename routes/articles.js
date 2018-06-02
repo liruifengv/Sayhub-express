@@ -16,7 +16,8 @@ router.get('/articles', function (req, res, next) {
   let page = Number(req.query.page)
   // 通过query参数判断
   if (title) {
-    Articles.find({title: title})
+    console.log(title)
+    Articles.find({title: new RegExp(title)})
       .then((articles) => {
         return res.status(200).json({articles})
       })

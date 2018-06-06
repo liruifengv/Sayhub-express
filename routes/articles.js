@@ -100,6 +100,7 @@ router.post('/articles', function (req, res, next) {
 router.get('/article/:id', function(req, res, next) {
   let _id = req.params.id
 
+  // 判断是否登录
   if (req.headers.authorization) {
     let sayhub_token = req.headers.authorization.slice(7)
     const decoded = jwt.verify(sayhub_token, 'sayhub');
@@ -108,32 +109,64 @@ router.get('/article/:id', function(req, res, next) {
     const userID = decoded.userID
     Articles.findById(_id)
       .then((info) => {
-        let _votes = info.votes
-        if (_votes.includes(userID)) {
-          Articles.findByIdAndUpdate(_id, {
-            is_up: true
-          },{new: true})
-          .then((ArticleDetail) => {
-            // console.log(ArticleDetail)
-            res.json(ArticleDetail)
-          }).catch(function (err) {
-            return res.status(401).send()
-          })
-        } else {
-          Articles.findByIdAndUpdate(_id, {
-            is_up: false
-          },{new: true})
-          .then((ArticleDetail) => {
-            // console.log(ArticleDetail)
-            res.json(ArticleDetail)
-          }).catch(function (err) {
-            return res.status(401).send()
-          })
+        let _readedUsers = info.readedUsers
+        // 判断已读用户里有没有当前用户 如果有证明已阅读过
+        if (_readedUsers.includes(userID)) {
+          let _votes = info.votes
+          if (_votes.includes(userID)) {
+            Articles.findByIdAndUpdate(_id, {
+              is_up: true
+            },{new: true})
+            .then((ArticleDetail) => {
+              // console.log(ArticleDetail)
+              res.json(ArticleDetail)
+            }).catch(function (err) {
+              return res.status(401).send()
+            })
+          } else {
+            Articles.findByIdAndUpdate(_id, {
+              is_up: false
+            },{new: true})
+            .then((ArticleDetail) => {
+              // console.log(ArticleDetail)
+              res.json(ArticleDetail)
+            }).catch(function (err) {
+              return res.status(401).send()
+            })
+          }
+        } else { // 已读用户里没有当前用户 阅读量+1
+          let _votes = info.votes
+          if (_votes.includes(userID)) {
+            Articles.findByIdAndUpdate(_id, {
+              is_up: true,
+              '$addToSet':{'readedUsers':userID},
+              '$inc':{'readed_count':1}
+            },{new: true})
+            .then((ArticleDetail) => {
+              // console.log(ArticleDetail)
+              res.json(ArticleDetail)
+            }).catch(function (err) {
+              return res.status(401).send()
+            })
+          } else {
+            Articles.findByIdAndUpdate(_id, {
+              is_up: false,
+              '$addToSet':{'readedUsers':userID},
+              '$inc':{'readed_count':1}
+            },{new: true})
+            .then((ArticleDetail) => {
+              // console.log(ArticleDetail)
+              res.json(ArticleDetail)
+            }).catch(function (err) {
+              return res.status(401).send()
+            })
+          }
         }
       })
-  } else {
+  } else { // 没有登录，阅读量直接+1
     Articles.findByIdAndUpdate(_id, {
-      is_up: false
+      is_up: false,
+      '$inc':{'readed_count':1},
     },{new: true})
     .then((ArticleDetail) => {
       // console.log(ArticleDetail)

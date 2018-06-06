@@ -39,13 +39,20 @@ let articlesSchema = new Schema({
   comments: {          // 评论数组(里面包含评论的 id)
     type: Array
   },
+  readed_count: {          // 阅读数量
+    type: Number,
+    default: 0
+  },
+  readedUsers: {          // 评论数组(里面包含评论的 id)
+    type: Array
+  },
   created: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   updated: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   }
 })
 

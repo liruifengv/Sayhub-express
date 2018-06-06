@@ -14,11 +14,11 @@ let commentsSchema = new Schema({
   },
   created: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   updated: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   is_up: {             // 是否点赞
     type: Boolean,

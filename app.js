@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');  
 let mongoose = require('mongoose')
+var history = require('connect-history-api-fallback');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -26,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
-
+app.use(history());
 //设置跨域访问
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');

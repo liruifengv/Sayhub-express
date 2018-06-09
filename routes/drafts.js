@@ -31,6 +31,7 @@ router.get('/drafts', function (req, res, next) {
 
       // 分页
       Drafts.find({author: username})
+        .sort({created: -1})
         .limit(page_size)
         .skip((page - 1) * page_size)
         .exec()

@@ -21,6 +21,7 @@ router.get('/article/:id/comments', function (req, res, next) {
  
   // 分页
   Comments.find({ articleID, articleID })
+    .sort({created: -1})
     .limit(page_size)
     .skip((page - 1) * page_size)
     .exec()

@@ -14,6 +14,7 @@ router.get('/articles', function (req, res, next) {
   let title = req.query.title         // 搜索文章  目前只支持 title
   let page_size = Number(req.query.page_size)
   let page = Number(req.query.page)
+  let sort = req.query.sort 
   // 通过query参数判断
   if (title) {
     console.log(title)
@@ -36,6 +37,7 @@ router.get('/articles', function (req, res, next) {
       
       // 分页
       Articles.find({category,category})
+        .sort({created: -1})
         .limit(page_size)
         .skip((page-1)*page_size)
         .exec()
@@ -54,17 +56,33 @@ router.get('/articles', function (req, res, next) {
       if (err) return handleError(err)
       console.log('文章总数为：', count )
       let total = count
+      let next = page + 1
+      if (sort === 'hot') {
+            // 分页
+            Articles.find({})
+            .sort({readed_count: -1})
+            .limit(page_size)
+            .skip((page-1)*page_size)
+            .exec()
+            .then(function(articles) {
+              return res.status(200).json({total,next,articles})
+            }).catch(function (err) {
+              return res.status(400).send()
+            })
+      } else {
+                    // 分页
+            Articles.find({})
+            .sort({created: -1})
+            .limit(page_size)
+            .skip((page-1)*page_size)
+            .exec()
+            .then(function(articles) {
+              return res.status(200).json({total,next,articles})
+            }).catch(function (err) {
+              return res.status(400).send()
+            })
+      }
 
-      // 分页
-      Articles.find({})
-        .limit(page_size)
-        .skip((page-1)*page_size)
-        .exec()
-        .then(function(articles) {
-          return res.status(200).json({total,articles})
-        }).catch(function (err) {
-          return res.status(400).send()
-        })
     })
   }
 })

@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');  // token
 var expressJwt = require('express-jwt'); // express token
 let Users = require('../models/users')
 let Articles = require('../models/articles')
-
+let formatData = ""
   
   // 用户注册
   router.post('/users', function(req, res ,next) {
@@ -69,12 +69,30 @@ let Articles = require('../models/articles')
       return res.status(401).send();
     });
   })
-
+  function format (data,id) {
+    formatData = data.map((item) => {
+      if (item.votes.includes(id)) {
+        item.is_up = true
+      } else {
+        item.is_up = false
+      }
+      return item
+    }) || []
+    return formatData   
+  }
     // 获取 user 发表过的文章
   router.get('/users/:username/articles', function(req, res, next) {
     let username = req.params.username
+    let userID = ''
+    if (req.headers.authorization) {
+      let sayhub_token = req.headers.authorization.slice(7)
+      const decoded = jwt.verify(sayhub_token, 'sayhub');
+      // 从token中拿到用户名和userID
+      userID = decoded.userID
+    }
     Articles.find({author: username}).then(function (articles) {
-      return res.status(200).json(articles);
+      formatData = format(articles,userID)
+      return res.status(200).json({formatData})
     }).catch(function (err) {
       return res.status(401).send();
     });

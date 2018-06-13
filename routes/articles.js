@@ -8,6 +8,17 @@ var md = require('markdown-it')({
   linkify: true,
   typographer: true
 })
+function format (data,id) {
+  formatData = data.map((item) => {
+    if (item.votes.includes(id)) {
+      item.is_up = true
+    } else {
+      item.is_up = false
+    }
+    return item
+  }) || []
+  return formatData   
+}
 // 文章列表
 router.get('/articles', function (req, res, next) {
   let category = req.query.category   // 标签分类
@@ -15,6 +26,14 @@ router.get('/articles', function (req, res, next) {
   let page_size = Number(req.query.page_size)
   let page = Number(req.query.page)
   let sort = req.query.sort 
+  let userID = ''
+  if (req.headers.authorization) {
+    let sayhub_token = req.headers.authorization.slice(7)
+    const decoded = jwt.verify(sayhub_token, 'sayhub');
+    // 从token中拿到用户名和userID
+    userID = decoded.userID
+  }
+  let formatData = []
   // 通过query参数判断
   if (title) {
     console.log(title)
@@ -42,7 +61,8 @@ router.get('/articles', function (req, res, next) {
         .skip((page-1)*page_size)
         .exec()
         .then(function(articles) {
-          return res.status(200).json({total,articles})
+          formatData = format(articles,userID)
+          return res.status(200).json({total,next,formatData})
         }).catch(function (err) {
           return res.status(400).send()
         })
@@ -65,7 +85,8 @@ router.get('/articles', function (req, res, next) {
             .skip((page-1)*page_size)
             .exec()
             .then(function(articles) {
-              return res.status(200).json({total,next,articles})
+              formatData = format(articles,userID)
+              return res.status(200).json({total,next,formatData})
             }).catch(function (err) {
               return res.status(400).send()
             })
@@ -77,7 +98,8 @@ router.get('/articles', function (req, res, next) {
             .skip((page-1)*page_size)
             .exec()
             .then(function(articles) {
-              return res.status(200).json({total,next,articles})
+              formatData = format(articles,userID)
+              return res.status(200).json({total,next,formatData})
             }).catch(function (err) {
               return res.status(400).send()
             })

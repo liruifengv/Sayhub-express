@@ -239,6 +239,7 @@ router.put('/article/:id', function (req, res, next) {
     content_render: content_render,
     content_text: content_text, 
     author: req.body.author,
+    category: req.body.category
   }
   Articles.findByIdAndUpdate(_id, editArticle, {new:true})
     .then((ArticleInfo) => {
